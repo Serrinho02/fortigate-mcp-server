@@ -1,0 +1,25 @@
+{
+  "server": {
+    "host": "127.0.0.1",
+    "port": 8814,
+    "name": "fortigate-mcp-server",
+    "version": "1.0.0"
+  },
+  "fortigate": {
+    "devices": {}
+  },
+  "auth": {
+    "require_auth": false,
+    "api_tokens": [],
+    "allowed_origins": []
+  },
+  "logging": {
+    "level": "INFO",
+    "console": true
+  },
+  "rate_limiting": {
+    "enabled": true,
+    "max_requests_per_minute": 60,
+    "burst_size": 10
+  }
+}

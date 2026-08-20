@@ -1,0 +1,29 @@
+{
+  "mcpServers": {
+    "fortigate-mcp": {
+      "command": "python",
+      "args": [
+        "-m",
+        "src.fortigate_mcp.server_http",
+        "--host",
+        "0.0.0.0",
+        "--port",
+        "8814",
+        "--path",
+        "/fortigate-mcp",
+        "--config",
+        "/absolute/path/to/fortigate-mcp-server/config/config.json"
+      ],
+      "env": {
+        "FORTIGATE_MCP_CONFIG": "/absolute/path/to/fortigate-mcp-server/config/config.json",
+        "FORTINET_MCP_DB_URL": "sqlite+aiosqlite:////absolute/path/to/fortigate-mcp-server/config/inventory.db",
+        "FORTINET_MCP_MODE": "full"
+      }
+    },
+
+    "FortiGateMCP": {
+      "url": "http://0.0.0.0:8814/fortigate-mcp/",
+      "transport": "http"
+    }
+  }
+}
