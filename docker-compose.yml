@@ -1,0 +1,64 @@
+version: '3.8'
+
+services:
+  fortigate-mcp-server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: fortigate-mcp-server
+    restart: unless-stopped
+    ports:
+      - "8814:8814"
+    volumes:
+      # Mount configuration file (required)
+      - ./config/config.json:/app/config/config.json:ro
+
+      # Mount the inventory DB so it survives container restarts (SQLite --
+      # a bind-mounted file is enough, no separate database service needed)
+      - ./config/inventory.db:/app/config/inventory.db
+
+      # Mount logs directory
+      - ./logs:/app/logs
+    environment:
+      - FORTIGATE_MCP_CONFIG=/app/config/config.json
+      - FORTINET_MCP_DB_URL=sqlite+aiosqlite:////app/config/inventory.db
+      - FORTINET_MCP_MODE=full
+    networks:
+      - fortigate-mcp-network
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # Optional: Nginx reverse proxy
+  nginx:
+    image: nginx:alpine
+    container_name: fortigate-mcp-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+    depends_on:
+      - fortigate-mcp-server
+    networks:
+      - fortigate-mcp-network
+    profiles:
+      - nginx
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "5m"
+        max-file: "3"
+
+networks:
+  fortigate-mcp-network:
+    driver: bridge
+    name: fortigate-mcp-network
+
+volumes:
+  fortigate-logs:
+    driver: local
